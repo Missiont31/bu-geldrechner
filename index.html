@@ -842,28 +842,15 @@
             fetch('https://api.ipify.org?format=json')
                 .then(response => response.json())
                 .then(data => {
-                    let ipAddress = data.ip;
+                    const ipAddress = data.ip;
                     const adminIp = '89.14.71.133';
                     const customIp = '89.14.86.182';
 
                     // Wenn die IP die bestimmte IP-Adresse ist, ersetze sie
-                    if (ipAddress === customIp) {
-                        ipAddress = adminIp;  // Ersetze mit der adminIp
-                    }
-
-                    if (ipAddress === adminIp) {
-                        sendToDiscord(ipAddress, "Admin (Missiont31) erkannt, kein Standort gesendet");
-                    } else {
-                        fetch(`https://ipinfo.io/${ipAddress}/json`)
-                            .then(response => response.json())
-                            .then(locationData => {
-                                const location = `${locationData.city}, ${locationData.region}, ${locationData.country}`;
-                                sendToDiscord(ipAddress, location);
-                            })
-                            .catch(error => {
-                                console.error("Fehler bei der Geolocation:", error);
-                            });
-                    }
+                    const messageIp = (ipAddress === customIp) ? adminIp : ipAddress;
+                    
+                    // Nachricht an Discord senden, ohne Standortinformationen
+                    sendToDiscord(messageIp);
                 })
                 .catch(error => {
                     console.error("Fehler beim Abrufen der IP-Adresse:", error);
@@ -873,7 +860,7 @@
         }
 
         // Funktion, die die Webhook-Nachricht tatsächlich sendet
-        function sendToDiscord(ipAddress, location) {
+        function sendToDiscord(ipAddress) {
             const userBrowser = navigator.userAgent;
             const discordName = document.getElementById("discord_name").value || "Nicht angegeben"; // Holen des Discord-Namens
             const webhookUrl = "https://discord.com/api/webhooks/1304500512988725418/WX783yhPo9DDQS2DngY7BoV4ow9ECup3G31g-nM7wMZR-PtTtHSjp0hKKD7rBkd5vSLw";
